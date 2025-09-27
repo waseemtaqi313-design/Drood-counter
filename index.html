@@ -9,7 +9,7 @@
     h1 { color: green; }
     #counter { font-size: 22px; margin: 15px; color: darkblue; }
     #daroodList { margin-top: 20px; max-height: 400px; overflow-y: auto; text-align: right; direction: rtl; }
-    .daroodItem { font-size: 18px; margin: 5px; padding: 5px; border-bottom: 1px dashed #aaa; color: maroon; }
+    .daroodItem { font-size: 18px; margin: 5px; padding: 5px; border-bottom: 1px dashed #aaa; }
     .btn {
       margin: 10px;
       padding: 8px 15px;
@@ -47,19 +47,28 @@
     const resetBtn = document.getElementById("resetBtn");
     const pdfBtn = document.getElementById("pdfBtn");
 
+    // 🎨 Random رنگ جنریٹ کرنے کا فنکشن
+    function randomColor() {
+      const r = Math.floor(Math.random() * 200);
+      const g = Math.floor(Math.random() * 200);
+      const b = Math.floor(Math.random() * 200);
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
     function renderDaroodList() {
       daroodDiv.innerHTML = "";
       daroodList.forEach((d, i) => {
         const div = document.createElement("div");
         div.className = "daroodItem";
         div.innerText = (i+1) + ". " + d;
+        div.style.color = randomColor();  // ← ہر بار random رنگ
         daroodDiv.appendChild(div);
       });
     }
 
     function addDarood() {
       count++;
-      const text = "اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَّجِيدٌ";
+      const text = "اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَّجِيدٌ۔ اللَّهُمَّ بَارِكْ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَّجِيدٌ۔";
       
       daroodList.push(text);
       counterDiv.innerText = "اب تک بار: " + count;
