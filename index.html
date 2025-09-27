@@ -15,9 +15,9 @@
     // 🔹 Random Soft رنگ
     function randomSoftColor() {
       return [
-        Math.floor(120 + Math.random() * 100), // R
-        Math.floor(120 + Math.random() * 100), // G
-        Math.floor(120 + Math.random() * 100)  // B
+        Math.floor(120 + Math.random() * 100),
+        Math.floor(120 + Math.random() * 100),
+        Math.floor(120 + Math.random() * 100)
       ];
     }
 
@@ -26,7 +26,7 @@
       let pageNumber = 1;
       const statusEl = document.getElementById("status");
 
-      // 🔹 Header/Footer
+      // Header/Footer
       function addHeaderFooter() {
         doc.setFontSize(10);
         doc.setTextColor(80);
@@ -34,7 +34,7 @@
         doc.text("صفحہ " + pageNumber, 200, 290, { align: "right" });
       }
 
-      // 🔹 Title Page
+      // Title Page
       const [r1,g1,b1] = randomSoftColor();
       doc.setTextColor(r1,g1,b1);
       doc.setFontSize(22);
@@ -42,31 +42,29 @@
 
       const [r2,g2,b2] = randomSoftColor();
       doc.setTextColor(r2,g2,b2);
-      doc.setFontSize(16);
-      doc.text("اللّٰهُمَّ صَلِّ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلٰی إِبْرَاهِيمَ وَعَلٰی اٰلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيْدٌ مَّجِيْدٌ۔", 105, 120, { align: "center" });
+      doc.setFontSize(14);
+      doc.text("اللّٰهُمَّ صَلِّ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلٰی إِبْرَاهِيمَ...", 105, 120, { align: "center" });
 
       const [r3,g3,b3] = randomSoftColor();
       doc.setTextColor(r3,g3,b3);
-      doc.setFontSize(16);
-      doc.text("اللّٰهُمَّ بَارِكْ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلٰی إِبْرَاهِيمَ وَعَلٰی اٰلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيْدٌ مَّجِيْدٌ۔", 105, 135, { align: "center" });
+      doc.setFontSize(14);
+      doc.text("اللّٰهُمَّ بَارِكْ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلٰی إِبْرَاهِيمَ...", 105, 135, { align: "center" });
 
       addHeaderFooter();
 
-      // 🔹 نئی پیج پر لسٹ شروع
+      // نئی پیج پر لسٹ شروع
       doc.addPage();
       pageNumber++;
       addHeaderFooter();
 
-      // ✅ درود مکمل فارم
+      // ✅ پورا درود
       const darood = "اللّٰهُمَّ صَلِّ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلٰی إِبْرَاهِيمَ وَعَلٰی اٰلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيْدٌ مَّجِيْدٌ۔ اللّٰهُمَّ بَارِكْ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلٰی إِبْرَاهِيمَ وَعَلٰی اٰلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيْدٌ مَّجِيْدٌ۔";
 
-      // 🔹 کتنی بار Repeat کرنا ہے
-      const repeatCount = 1000; // ← یہاں آپ 5000 یا 10000 بھی کر سکتے ہیں
-      const daroodList = Array(repeatCount).fill(darood);
+      const repeatCount = 500; // ← ٹیسٹ کے لیے 500 رکھیں (بعد میں 1000+ کر سکتے ہیں)
 
-      // 🔹 لسٹ پرنٹ کرنا + Live Counter
       let y = 30;
-      for (let i = 0; i < daroodList.length; i++) {
+
+      for (let i = 0; i < repeatCount; i++) {
         if (y > 270) {
           doc.addPage();
           pageNumber++;
@@ -77,21 +75,18 @@
         const [r,g,b] = randomSoftColor();
         doc.setTextColor(r,g,b);
 
-        const wrappedText = doc.splitTextToSize((i+1) + ". " + daroodList[i], 180);
+        const wrappedText = doc.splitTextToSize((i+1) + ". " + darood, 180);
         doc.text(wrappedText, 10, y);
         y += (wrappedText.length * 8);
 
-        // 🔹 Counter اپڈیٹ
-        if (i % 10 === 0) { // ہر 10 درود کے بعد کاؤنٹر اپڈیٹ
+        // Status اپڈیٹ
+        if (i % 10 === 0) {
           statusEl.innerText = `ابھی تک ${i+1} درود لکھے جا چکے ہیں...`;
-          await new Promise(r => setTimeout(r, 1)); // UI اپڈیٹ کیلئے تھوڑا وقفہ
+          await new Promise(r => setTimeout(r, 1)); // چھوٹا وقفہ تاکہ براؤزر فریز نہ ہو
         }
       }
 
-      // 🔹 آخر میں میسج
-      statusEl.innerText = `✅ ${repeatCount} درود مکمل ہو گئے اور PDF تیار ہے!`;
-
-      // 🔹 PDF محفوظ کریں
+      statusEl.innerText = `✅ ${repeatCount} درود مکمل اور PDF تیار ہے!`;
       doc.save("Drood_Ibrahimi.pdf");
     }
   </script>
