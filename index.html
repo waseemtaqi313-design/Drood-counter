@@ -3,17 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title>درودِ ابراہیمی کاؤنٹر</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; background: #f9f9f9; }
     h1 { color: green; }
     #counter { font-size: 22px; margin: 15px; color: darkblue; }
     #daroodList { margin-top: 20px; max-height: 400px; overflow-y: auto; text-align: right; direction: rtl; }
     .daroodItem { font-size: 18px; margin: 5px; padding: 5px; border-bottom: 1px dashed #aaa; color: maroon; }
+    .btn {
+      margin: 10px;
+      padding: 8px 15px;
+      font-size: 16px;
+      background: darkblue;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn:hover { background: navy; }
+    #resetBtn { background: crimson; }
+    #resetBtn:hover { background: darkred; }
   </style>
 </head>
 <body>
   <h1>🌹 درودِ ابراہیمی کاؤنٹر 🌹</h1>
   <div id="counter">شروع ہو رہا ہے...</div>
+  <button id="resetBtn" class="btn">🔄 Reset کریں</button>
+  <button id="pdfBtn" class="btn">⬇️ PDF ڈاؤنلوڈ کریں</button>
   <div id="daroodList"></div>
 
   <script>
@@ -28,6 +44,8 @@
 
     const counterDiv = document.getElementById("counter");
     const daroodDiv = document.getElementById("daroodList");
+    const resetBtn = document.getElementById("resetBtn");
+    const pdfBtn = document.getElementById("pdfBtn");
 
     function renderDaroodList() {
       daroodDiv.innerHTML = "";
@@ -52,6 +70,41 @@
 
       renderDaroodList();
     }
+
+    // Reset بٹن
+    resetBtn.addEventListener("click", function() {
+      if(confirm("کیا آپ واقعی سارا ڈیٹا ری سیٹ کرنا چاہتے ہیں؟")) {
+        count = 0;
+        daroodList = [];
+        localStorage.removeItem("daroodCount");
+        localStorage.removeItem("daroodList");
+        counterDiv.innerText = "اب تک بار: " + count;
+        renderDaroodList();
+      }
+    });
+
+    // PDF ڈاؤنلوڈ
+    pdfBtn.addEventListener("click", function() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(12);
+
+      doc.text("🌹 درودِ ابراہیمی کی فہرست 🌹", 10, 10);
+
+      let y = 20;
+      daroodList.forEach((d, i) => {
+        if(y > 280) { 
+          doc.addPage(); 
+          y = 20; 
+        }
+        doc.text((i+1) + ". " + d, 10, y);
+        y += 8;
+      });
+
+      doc.save("Darood_List.pdf");
+    });
 
     // پہلی بار لسٹ لوڈ کریں
     counterDiv.innerText = "اب تک بار: " + count;
