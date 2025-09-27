@@ -5,42 +5,28 @@ pdfBtn.addEventListener("click", function() {
 
   let pageNumber = 1;
 
-  // 🔹 Helper فنکشن: Random رنگ بنانا
-  function randomColor() {
-    return [
-      Math.floor(Math.random() * 256),
-      Math.floor(Math.random() * 256),
-      Math.floor(Math.random() * 256)
-    ];
-  }
-
   // 🔹 Title Page with Border
-  doc.setDrawColor(150, 75, 0); 
+  doc.setDrawColor(150, 75, 0); // براؤن کلر
   doc.setLineWidth(1.5);
-  doc.rect(10, 10, 190, 277); 
+  doc.rect(10, 10, 190, 277); // پورے صفحے کا بارڈر
 
-  let [r1,g1,b1] = randomColor();
-  doc.setTextColor(r1,g1,b1);
   doc.setFont("Helvetica", "bold");
   doc.setFontSize(22);
   doc.text("🌹 درودِ ابراہیمی 🌹", 70, 50);
 
   doc.setFont("Helvetica", "normal");
   doc.setFontSize(14);
-  let [r2,g2,b2] = randomColor();
-  doc.setTextColor(r2,g2,b2);
   doc.text("شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے", 25, 70);
 
+  // نیچے لائن
   doc.setDrawColor(0, 100, 0); 
   doc.setLineWidth(0.8);
   doc.line(40, 80, 170, 80);
 
-  // 🔹 پہلا درود
+  // 🔹 پہلا درود بطور مثال
   const firstDarood = "اللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلٰى إِبْرَاهِيمَ وَعَلٰى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ";
   const wrappedDarood = doc.splitTextToSize(firstDarood, 170);
 
-  let [r3,g3,b3] = randomColor();
-  doc.setTextColor(r3,g3,b3);
   doc.setFontSize(16);
   doc.text("مثال:", 20, 100);
   doc.setFontSize(14);
@@ -50,32 +36,27 @@ pdfBtn.addEventListener("click", function() {
   const urduTranslation = "اے اللہ! رحمت نازل فرما محمد ﷺ اور آلِ محمد ﷺ پر، جیسے کہ تو نے رحمت نازل فرمائی ابراہیم علیہ السلام اور آلِ ابراہیم علیہ السلام پر۔ بے شک تو لائق حمد و بزرگی والا ہے۔";
   const wrappedTranslation = doc.splitTextToSize(urduTranslation, 170);
 
-  let [r4,g4,b4] = randomColor();
-  doc.setTextColor(r4,g4,b4);
   doc.setFontSize(14);
   doc.text("ترجمہ:", 20, 135);
   doc.setFontSize(12);
   doc.text(wrappedTranslation, 20, 145);
 
-  // 🔹 دعا
+  // 🔹 دعائیہ جملہ
   const dua = "یا اللہ! اس درود کو ہمارے لیے باعثِ رحمت، برکت اور نجات بنا۔ آمین۔";
   const wrappedDua = doc.splitTextToSize(dua, 170);
 
-  let [r5,g5,b5] = randomColor();
-  doc.setTextColor(r5,g5,b5);
   doc.setFontSize(14);
   doc.text("دعا:", 20, 175);
   doc.setFontSize(12);
   doc.text(wrappedDua, 20, 185);
 
-  // 🔹 اگلا صفحہ
+  // اگلا صفحہ
   doc.addPage();
   pageNumber++;
 
-  // Header/Footer فنکشن
+  // 🔹 Header/Footer فنکشن
   function addHeaderFooter() {
     doc.setFontSize(14);
-    doc.setTextColor(0,0,0); // ہیڈر/فٹر بلیک
     doc.text("🌹 درودِ ابراہیمی کاؤنٹر 🌹", 70, 10);
     doc.setFontSize(10);
     doc.text("صفحہ " + pageNumber, 180, 290);
@@ -84,7 +65,7 @@ pdfBtn.addEventListener("click", function() {
 
   addHeaderFooter();
 
-  // 🔹 باقی لسٹ (Random رنگ کے ساتھ)
+  // 🔹 باقی لسٹ
   let y = 30;
   daroodList.forEach((d, i) => {
     if(y > 270) { 
@@ -93,17 +74,10 @@ pdfBtn.addEventListener("click", function() {
       addHeaderFooter();
       y = 30; 
     }
-
-    const [r,g,b] = randomColor();
-    doc.setTextColor(r,g,b);
-
     const wrappedText = doc.splitTextToSize((i+1) + ". " + d, 180);
     doc.text(wrappedText, 10, y);
     y += (wrappedText.length * 8);
   });
-
-  // آخر میں واپس بلیک
-  doc.setTextColor(0,0,0);
 
   doc.save("Darood_List.pdf");
 });
