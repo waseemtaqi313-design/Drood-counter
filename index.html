@@ -2,7 +2,7 @@
 <html lang="ur">
 <head>
   <meta charset="UTF-8">
-  <title>درود ابراہیمی کاؤنٹر</title>
+  <title>درود ابراہیمی PDF</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -12,60 +12,40 @@
   <script>
     const { jsPDF } = window.jspdf;
 
-    // 🔹 Random Soft رنگ
+    // 🔹 Random Soft Color Function
     function randomSoftColor() {
       return [
-        Math.floor(120 + Math.random() * 100),
-        Math.floor(120 + Math.random() * 100),
-        Math.floor(120 + Math.random() * 100)
+        Math.floor(100 + Math.random() * 120),
+        Math.floor(100 + Math.random() * 120),
+        Math.floor(100 + Math.random() * 120)
       ];
     }
 
-    async function generatePDF() {
-      const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    function generatePDF() {
+      const doc = new jsPDF("p", "mm", "a4");
       let pageNumber = 1;
+      let y = 30;
+
       const statusEl = document.getElementById("status");
-
-      // Header/Footer
-      function addHeaderFooter() {
-        doc.setFontSize(10);
-        doc.setTextColor(80);
-        doc.text("درود ابراہیمی - خودکار کاؤنٹر", 105, 10, { align: "center" });
-        doc.text("صفحہ " + pageNumber, 200, 290, { align: "right" });
-      }
-
-      // Title Page
-      const [r1,g1,b1] = randomSoftColor();
-      doc.setTextColor(r1,g1,b1);
-      doc.setFontSize(22);
-      doc.text("درود ابراہیمی", 105, 100, { align: "center" });
-
-      const [r2,g2,b2] = randomSoftColor();
-      doc.setTextColor(r2,g2,b2);
-      doc.setFontSize(14);
-      doc.text("اللّٰهُمَّ صَلِّ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلٰی إِبْرَاهِيمَ...", 105, 120, { align: "center" });
-
-      const [r3,g3,b3] = randomSoftColor();
-      doc.setTextColor(r3,g3,b3);
-      doc.setFontSize(14);
-      doc.text("اللّٰهُمَّ بَارِكْ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلٰی إِبْرَاهِيمَ...", 105, 135, { align: "center" });
-
-      addHeaderFooter();
-
-      // نئی پیج پر لسٹ شروع
-      doc.addPage();
-      pageNumber++;
-      addHeaderFooter();
 
       // ✅ پورا درود
       const darood = "اللّٰهُمَّ صَلِّ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلٰی إِبْرَاهِيمَ وَعَلٰی اٰلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيْدٌ مَّجِيْدٌ۔ اللّٰهُمَّ بَارِكْ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلٰی إِبْرَاهِيمَ وَعَلٰی اٰلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيْدٌ مَّجِيْدٌ۔";
 
-      const repeatCount = 500; // ← ٹیسٹ کے لیے 500 رکھیں (بعد میں 1000+ کر سکتے ہیں)
+      const repeatCount = 200; // ← ٹیسٹ کیلئے 200، بعد میں بڑھا سکتے ہیں
 
-      let y = 30;
+      // 🔹 Header/Footer function
+      function addHeaderFooter() {
+        doc.setFontSize(10);
+        doc.setTextColor(80);
+        doc.text("درود ابراہیمی کاؤنٹر", 105, 10, { align: "center" });
+        doc.text("صفحہ " + pageNumber, 200, 290, { align: "right" });
+      }
 
+      addHeaderFooter();
+
+      // 🔹 Loop to write Darood
       for (let i = 0; i < repeatCount; i++) {
-        if (y > 270) {
+        if (y > 270) {   // نیا صفحہ
           doc.addPage();
           pageNumber++;
           addHeaderFooter();
@@ -74,19 +54,15 @@
 
         const [r,g,b] = randomSoftColor();
         doc.setTextColor(r,g,b);
+        doc.setFontSize(12);
 
         const wrappedText = doc.splitTextToSize((i+1) + ". " + darood, 180);
-        doc.text(wrappedText, 10, y);
-        y += (wrappedText.length * 8);
+        doc.text(wrappedText, 15, y);
 
-        // Status اپڈیٹ
-        if (i % 10 === 0) {
-          statusEl.innerText = `ابھی تک ${i+1} درود لکھے جا چکے ہیں...`;
-          await new Promise(r => setTimeout(r, 1)); // چھوٹا وقفہ تاکہ براؤزر فریز نہ ہو
-        }
+        y += (wrappedText.length * 7); // اگلی لائن کیلئے اسپیس
       }
 
-      statusEl.innerText = `✅ ${repeatCount} درود مکمل اور PDF تیار ہے!`;
+      statusEl.innerText = `✅ ${repeatCount} درود لکھ کر PDF تیار ہوگیا`;
       doc.save("Drood_Ibrahimi.pdf");
     }
   </script>
