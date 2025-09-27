@@ -2,7 +2,7 @@
 <html lang="ur">
 <head>
   <meta charset="UTF-8">
-  <title>درود ابراہیمی PDF</title>
+  <title>درود ابراہیمی</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -12,58 +12,46 @@
   <script>
     const { jsPDF } = window.jspdf;
 
-    // 🔹 Random Soft Color Function
-    function randomSoftColor() {
+    // 🎨 Random color function
+    function randomColor() {
       return [
-        Math.floor(100 + Math.random() * 120),
-        Math.floor(100 + Math.random() * 120),
-        Math.floor(100 + Math.random() * 120)
+        Math.floor(Math.random() * 200), 
+        Math.floor(Math.random() * 200), 
+        Math.floor(Math.random() * 200)
       ];
     }
 
     function generatePDF() {
       const doc = new jsPDF("p", "mm", "a4");
-      let pageNumber = 1;
-      let y = 30;
+      let y = 20;
+      let page = 1;
 
       const statusEl = document.getElementById("status");
 
-      // ✅ پورا درود
+      // ✅ مکمل درود ابراہیمی
       const darood = "اللّٰهُمَّ صَلِّ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلٰی إِبْرَاهِيمَ وَعَلٰی اٰلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيْدٌ مَّجِيْدٌ۔ اللّٰهُمَّ بَارِكْ عَلٰی مُحَمَّدٍ وَعَلٰی اٰلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلٰی إِبْرَاهِيمَ وَعَلٰی اٰلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيْدٌ مَّجِيْدٌ۔";
 
-      const repeatCount = 200; // ← ٹیسٹ کیلئے 200، بعد میں بڑھا سکتے ہیں
+      const repeatCount = 200; // ← آپ 1000 یا 5000 بھی کر سکتے ہیں
 
-      // 🔹 Header/Footer function
-      function addHeaderFooter() {
-        doc.setFontSize(10);
-        doc.setTextColor(80);
-        doc.text("درود ابراہیمی کاؤنٹر", 105, 10, { align: "center" });
-        doc.text("صفحہ " + pageNumber, 200, 290, { align: "right" });
-      }
-
-      addHeaderFooter();
-
-      // 🔹 Loop to write Darood
       for (let i = 0; i < repeatCount; i++) {
-        if (y > 270) {   // نیا صفحہ
+        if (y > 270) {  // نئی پیج کی جگہ
           doc.addPage();
-          pageNumber++;
-          addHeaderFooter();
-          y = 30;
+          page++;
+          y = 20;
         }
 
-        const [r,g,b] = randomSoftColor();
+        const [r,g,b] = randomColor();
         doc.setTextColor(r,g,b);
-        doc.setFontSize(12);
+        doc.setFontSize(10);
 
-        const wrappedText = doc.splitTextToSize((i+1) + ". " + darood, 180);
-        doc.text(wrappedText, 15, y);
+        const wrapped = doc.splitTextToSize((i+1) + ". " + darood, 180);
+        doc.text(wrapped, 15, y);
 
-        y += (wrappedText.length * 7); // اگلی لائن کیلئے اسپیس
+        y += wrapped.length * 6; // اگلی لائن کا فاصلہ
       }
 
-      statusEl.innerText = `✅ ${repeatCount} درود لکھ کر PDF تیار ہوگیا`;
-      doc.save("Drood_Ibrahimi.pdf");
+      statusEl.innerText = `✅ ${repeatCount} مرتبہ درود لکھ کر PDF تیار ہوگیا`;
+      doc.save("Drood-Ibrahimi.pdf");
     }
   </script>
 </body>
