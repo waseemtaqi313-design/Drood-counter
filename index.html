@@ -1,62 +1,64 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<html lang="ur">
 <head>
   <meta charset="UTF-8">
-  <title>درود ابراہیمی کاؤنٹر</title>
+  <title>درودِ ابراہیمی کاؤنٹر</title>
   <style>
-    body {
-      font-family: "Noto Naskh Arabic", serif;
-      background: #f8f9fa;
-      text-align: center;
-      padding: 20px;
-    }
-    .darood {
-      font-size: 22px;
-      margin: 20px auto;
-      line-height: 2;
-      color: #2c3e50;
-    }
-    .counter {
-      font-size: 28px;
-      margin-top: 20px;
-      font-weight: bold;
-      color: #27ae60;
-    }
-    .box {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+    body { font-family: Arial, sans-serif; text-align: center; background: #f9f9f9; }
+    h1 { color: green; }
+    #counter { font-size: 22px; margin: 15px; color: darkblue; }
+    #daroodList { margin-top: 20px; max-height: 400px; overflow-y: auto; text-align: right; direction: rtl; }
+    .daroodItem { font-size: 18px; margin: 5px; padding: 5px; border-bottom: 1px dashed #aaa; color: maroon; }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>درود ابراہیمی</h1>
-    <div id="darood" class="darood"></div>
-    <div class="counter">اب تک کتنی بار لکھا گیا: <span id="count">0</span></div>
-  </div>
+  <h1>🌹 درودِ ابراہیمی کاؤنٹر 🌹</h1>
+  <div id="counter">شروع ہو رہا ہے...</div>
+  <div id="daroodList"></div>
 
   <script>
-    const daroodText = "اللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلٰى إِبْرَاهِيْمَ وَعَلٰى آلِ إِبْرَاهِيْمَ إِنَّكَ حَمِيْدٌ مَّجِيْدٌ۔ اللّٰهُمَّ بَارِكْ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلٰى إِبْرَاهِيْمَ وَعَلٰى آلِ إِبْرَاهِيْمَ إِنَّكَ حَمِيْدٌ مَّجِيْدٌ۔";
+    // پچھلا ڈیٹا لوڈ کریں
+    let count = localStorage.getItem("daroodCount") 
+                ? parseInt(localStorage.getItem("daroodCount")) 
+                : 0;
 
-    let count = 0;
-    const daroodDiv = document.getElementById("darood");
-    const countSpan = document.getElementById("count");
+    let daroodList = localStorage.getItem("daroodList") 
+                     ? JSON.parse(localStorage.getItem("daroodList")) 
+                     : [];
 
-    function writeDarood() {
-      const p = document.createElement("p");
-      p.textContent = daroodText;
-      daroodDiv.appendChild(p);
-      count++;
-      countSpan.textContent = count.toLocaleString();
-      window.scrollTo(0, document.body.scrollHeight);
+    const counterDiv = document.getElementById("counter");
+    const daroodDiv = document.getElementById("daroodList");
+
+    function renderDaroodList() {
+      daroodDiv.innerHTML = "";
+      daroodList.forEach((d, i) => {
+        const div = document.createElement("div");
+        div.className = "daroodItem";
+        div.innerText = (i+1) + ". " + d;
+        daroodDiv.appendChild(div);
+      });
     }
 
-    // ہر 1 سیکنڈ بعد درود لکھتا رہے گا
-    setInterval(writeDarood, 1000);
+    function addDarood() {
+      count++;
+      const text = "اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَّجِيدٌ";
+      
+      daroodList.push(text);
+      counterDiv.innerText = "اب تک بار: " + count;
+
+      // محفوظ کریں
+      localStorage.setItem("daroodCount", count);
+      localStorage.setItem("daroodList", JSON.stringify(daroodList));
+
+      renderDaroodList();
+    }
+
+    // پہلی بار لسٹ لوڈ کریں
+    counterDiv.innerText = "اب تک بار: " + count;
+    renderDaroodList();
+
+    // ہر 2 سیکنڈ بعد ایک درود شامل کریں
+    setInterval(addDarood, 2000);
   </script>
 </body>
 </html>
