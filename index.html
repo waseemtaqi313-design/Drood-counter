@@ -1,83 +1,131 @@
-// PDF ڈاؤنلوڈ
-pdfBtn.addEventListener("click", function() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  let pageNumber = 1;
-
-  // 🔹 Title Page with Border
-  doc.setDrawColor(150, 75, 0); // براؤن کلر
-  doc.setLineWidth(1.5);
-  doc.rect(10, 10, 190, 277); // پورے صفحے کا بارڈر
-
-  doc.setFont("Helvetica", "bold");
-  doc.setFontSize(22);
-  doc.text("🌹 درودِ ابراہیمی 🌹", 70, 50);
-
-  doc.setFont("Helvetica", "normal");
-  doc.setFontSize(14);
-  doc.text("شروع اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے", 25, 70);
-
-  // نیچے لائن
-  doc.setDrawColor(0, 100, 0); 
-  doc.setLineWidth(0.8);
-  doc.line(40, 80, 170, 80);
-
-  // 🔹 پہلا درود بطور مثال
-  const firstDarood = "اللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلٰى إِبْرَاهِيمَ وَعَلٰى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ";
-  const wrappedDarood = doc.splitTextToSize(firstDarood, 170);
-
-  doc.setFontSize(16);
-  doc.text("مثال:", 20, 100);
-  doc.setFontSize(14);
-  doc.text(wrappedDarood, 20, 110);
-
-  // 🔹 اردو ترجمہ
-  const urduTranslation = "اے اللہ! رحمت نازل فرما محمد ﷺ اور آلِ محمد ﷺ پر، جیسے کہ تو نے رحمت نازل فرمائی ابراہیم علیہ السلام اور آلِ ابراہیم علیہ السلام پر۔ بے شک تو لائق حمد و بزرگی والا ہے۔";
-  const wrappedTranslation = doc.splitTextToSize(urduTranslation, 170);
-
-  doc.setFontSize(14);
-  doc.text("ترجمہ:", 20, 135);
-  doc.setFontSize(12);
-  doc.text(wrappedTranslation, 20, 145);
-
-  // 🔹 دعائیہ جملہ
-  const dua = "یا اللہ! اس درود کو ہمارے لیے باعثِ رحمت، برکت اور نجات بنا۔ آمین۔";
-  const wrappedDua = doc.splitTextToSize(dua, 170);
-
-  doc.setFontSize(14);
-  doc.text("دعا:", 20, 175);
-  doc.setFontSize(12);
-  doc.text(wrappedDua, 20, 185);
-
-  // اگلا صفحہ
-  doc.addPage();
-  pageNumber++;
-
-  // 🔹 Header/Footer فنکشن
-  function addHeaderFooter() {
-    doc.setFontSize(14);
-    doc.text("🌹 درودِ ابراہیمی کاؤنٹر 🌹", 70, 10);
-    doc.setFontSize(10);
-    doc.text("صفحہ " + pageNumber, 180, 290);
-    doc.setFontSize(12);
-  }
-
-  addHeaderFooter();
-
-  // 🔹 باقی لسٹ
-  let y = 30;
-  daroodList.forEach((d, i) => {
-    if(y > 270) { 
-      doc.addPage(); 
-      pageNumber++;
-      addHeaderFooter();
-      y = 30; 
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <title>درودِ ابراہیمی کاؤنٹر</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background: #f9f9f9; }
+    h1 { color: green; }
+    #counter { font-size: 22px; margin: 15px; color: darkblue; }
+    #daroodList { margin-top: 20px; max-height: 400px; overflow-y: auto; text-align: right; direction: rtl; }
+    .daroodItem { font-size: 18px; margin: 5px; padding: 5px; border-bottom: 1px dashed #aaa; color: maroon; }
+    .btn {
+      margin: 10px;
+      padding: 8px 15px;
+      font-size: 16px;
+      background: darkblue;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
-    const wrappedText = doc.splitTextToSize((i+1) + ". " + d, 180);
-    doc.text(wrappedText, 10, y);
-    y += (wrappedText.length * 8);
-  });
+    .btn:hover { background: navy; }
+    #resetBtn { background: crimson; }
+    #resetBtn:hover { background: darkred; }
+  </style>
+</head>
+<body>
+  <h1>🌹 درودِ ابراہیمی کاؤنٹر 🌹</h1>
+  <div id="counter">شروع ہو رہا ہے...</div>
+  <button id="resetBtn" class="btn">🔄 Reset کریں</button>
+  <button id="pdfBtn" class="btn">⬇️ PDF ڈاؤنلوڈ کریں</button>
+  <div id="daroodList"></div>
 
-  doc.save("Darood_List.pdf");
-});
+  <script>
+    // پچھلا ڈیٹا لوڈ کریں
+    let count = localStorage.getItem("daroodCount") 
+                ? parseInt(localStorage.getItem("daroodCount")) 
+                : 0;
+
+    let daroodList = localStorage.getItem("daroodList") 
+                     ? JSON.parse(localStorage.getItem("daroodList")) 
+                     : [];
+
+    const counterDiv = document.getElementById("counter");
+    const daroodDiv = document.getElementById("daroodList");
+    const resetBtn = document.getElementById("resetBtn");
+    const pdfBtn = document.getElementById("pdfBtn");
+
+    function renderDaroodList() {
+      daroodDiv.innerHTML = "";
+      daroodList.forEach((d, i) => {
+        const div = document.createElement("div");
+        div.className = "daroodItem";
+        div.innerText = (i+1) + ". " + d;
+        daroodDiv.appendChild(div);
+      });
+    }
+
+    function addDarood() {
+      count++;
+      const text = "اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَّجِيدٌ";
+      
+      daroodList.push(text);
+      counterDiv.innerText = "اب تک بار: " + count;
+
+      // محفوظ کریں
+      localStorage.setItem("daroodCount", count);
+      localStorage.setItem("daroodList", JSON.stringify(daroodList));
+
+      renderDaroodList();
+    }
+
+    // Reset بٹن
+    resetBtn.addEventListener("click", function() {
+      if(confirm("کیا آپ واقعی سارا ڈیٹا ری سیٹ کرنا چاہتے ہیں؟")) {
+        count = 0;
+        daroodList = [];
+        localStorage.removeItem("daroodCount");
+        localStorage.removeItem("daroodList");
+        counterDiv.innerText = "اب تک بار: " + count;
+        renderDaroodList();
+      }
+    });
+
+    // PDF ڈاؤنلوڈ
+    pdfBtn.addEventListener("click", function() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(12);
+
+      let pageNumber = 1;
+      function addHeader() {
+        doc.setFontSize(14);
+        doc.text("🌹 درود ابراہیمی کاؤنٹر — صفحہ " + pageNumber + " 🌹", 10, 10);
+        doc.setFontSize(12);
+      }
+
+      addHeader();
+
+      // 🔹 کل کاؤنٹ پہلے صفحے پر لکھیں
+      doc.text("کل درود: " + count + " مرتبہ", 10, 20);
+
+      let y = 35; // تھوڑا نیچے سے لسٹ شروع کریں
+      daroodList.forEach((d, i) => {
+        if(y > 280) { 
+          doc.addPage(); 
+          pageNumber++;
+          addHeader();
+          y = 20; 
+        }
+        // 🔹 لائن wrap
+        const wrappedText = doc.splitTextToSize((i+1) + ". " + d, 180);
+        doc.text(wrappedText, 10, y);
+        y += (wrappedText.length * 8);
+      });
+
+      doc.save("Darood_List.pdf");
+    });
+
+    // پہلی بار لسٹ لوڈ کریں
+    counterDiv.innerText = "اب تک بار: " + count;
+    renderDaroodList();
+
+    // ہر 2 سیکنڈ بعد ایک درود شامل کریں
+    setInterval(addDarood, 2000);
+  </script>
+</body>
+</html>
