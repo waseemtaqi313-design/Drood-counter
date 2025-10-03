@@ -6,7 +6,7 @@
   <style>
     body { font-family: Arial, sans-serif; text-align: center; background: #f9f9f9; }
     h1 { color: green; }
-    #counter { font-size: 22px; margin: 15px; color: darkblue; }
+    #counter { font-size: 28px; font-weight: bold; margin: 15px; color: darkgreen; }
     #daroodList { 
       margin-top: 20px; 
       max-height: 400px; 
@@ -37,16 +37,18 @@
     .btn:hover { background: navy; }
     #resetBtn { background: crimson; }
     #resetBtn:hover { background: darkred; }
+    #addBtn { background: darkgreen; }
+    #addBtn:hover { background: green; }
   </style>
 </head>
 <body>
   <h1>🌹 درودِ ابراہیمی کاؤنٹر 🌹</h1>
   <div id="counter">شروع ہو رہا ہے...</div>
+  <button id="addBtn" class="btn">➕ ایک درود شامل کریں</button>
   <button id="resetBtn" class="btn">🔄 Reset کریں</button>
   <div id="daroodList"></div>
 
   <script>
-    // پچھلا ڈیٹا لوڈ کریں
     let count = localStorage.getItem("daroodCount") 
                 ? parseInt(localStorage.getItem("daroodCount")) 
                 : 0;
@@ -58,16 +60,16 @@
     const counterDiv = document.getElementById("counter");
     const daroodDiv = document.getElementById("daroodList");
     const resetBtn = document.getElementById("resetBtn");
+    const addBtn = document.getElementById("addBtn");
 
-    function renderDaroodList() {
-      daroodDiv.innerHTML = "";
-      daroodList.forEach((d, i) => {
-        const div = document.createElement("div");
-        div.className = "daroodItem";
-        div.innerText = (i+1) + ". " + d;
-        daroodDiv.appendChild(div);
-      });
-    }
+    // پہلے سے محفوظ لسٹ دکھائیں
+    daroodList.forEach((d, i) => {
+      const div = document.createElement("div");
+      div.className = "daroodItem";
+      div.innerText = (i+1) + ". " + d;
+      daroodDiv.appendChild(div);
+    });
+    counterDiv.innerText = "اب تک بار: " + count;
 
     function addDarood() {
       count++;
@@ -76,11 +78,17 @@
       daroodList.push(text);
       counterDiv.innerText = "اب تک بار: " + count;
 
-      // محفوظ کریں
-      localStorage.setItem("daroodCount", count);
-      localStorage.setItem("daroodList", JSON.stringify(daroodList));
+      // صرف نیا درود append کریں
+      const div = document.createElement("div");
+      div.className = "daroodItem";
+      div.innerText = count + ". " + text;
+      daroodDiv.appendChild(div);
 
-      renderDaroodList();
+      // ہر 10 پر save کریں
+      if (count % 10 === 0) {
+        localStorage.setItem("daroodCount", count);
+        localStorage.setItem("daroodList", JSON.stringify(daroodList));
+      }
     }
 
     // Reset بٹن
@@ -91,15 +99,14 @@
         localStorage.removeItem("daroodCount");
         localStorage.removeItem("daroodList");
         counterDiv.innerText = "اب تک بار: " + count;
-        renderDaroodList();
+        daroodDiv.innerHTML = "";
       }
     });
 
-    // پہلی بار لسٹ لوڈ کریں
-    counterDiv.innerText = "اب تک بار: " + count;
-    renderDaroodList();
+    // Manual Add بٹن
+    addBtn.addEventListener("click", addDarood);
 
-    // ہر 1 سیکنڈ بعد ایک درود شامل کریں
+    // Auto Mode → ہر 1 سیکنڈ بعد add
     setInterval(addDarood, 1000);
   </script>
 </body>
