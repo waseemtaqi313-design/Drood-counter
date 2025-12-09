@@ -4,14 +4,13 @@
   <meta charset="UTF-8">
   <title>درودِ ابراہیمی کاؤنٹر</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; background: #f9f9f9; }
+    body { font-family: Arial; text-align: center; background: #f9f9f9; }
     h1 { color: green; }
-    #counter, #totalCounter { font-size: 26px; font-weight: bold; margin: 10px; color: darkgreen; }
+    #sessionCounter, #totalCounter { font-size: 26px; font-weight: bold; margin: 10px; color: darkgreen; }
     #daroodList { 
       margin-top: 20px; 
       max-height: 400px; 
       overflow-y: auto; 
-      text-align: center; 
       direction: rtl; 
     }
     .daroodItem { 
@@ -20,9 +19,8 @@
       padding: 5px; 
       border-bottom: 1px dashed #aaa; 
       color: maroon; 
-      line-height: 1.8; 
-      white-space: pre-wrap; 
-      word-wrap: break-word;
+      line-height: 1.8;
+      white-space: pre-wrap;
     }
     .btn {
       margin: 10px;
@@ -42,35 +40,35 @@
 
   <h1>🌹 درودِ ابراہیمی کاؤنٹر 🌹</h1>
 
-  <div id="counter">موجودہ بار: 0</div>
-  <div id="totalCounter">مکمل کل بار: 0</div>
+  <div id="totalCounter">کل عدد: 0</div>
+  <div id="sessionCounter">اس سیشن میں: 0</div>
 
   <button id="addBtn" class="btn">➕ ایک درود شامل کریں</button>
-  <button id="resetBtn" class="btn">🔄 Reset (صرف موجودہ)</button>
+  <button id="resetBtn" class="btn">🔄 سیشن Reset</button>
 
   <div id="daroodList"></div>
 
   <script>
-    // موجودہ کاؤنٹر
-    let count = localStorage.getItem("daroodCount") 
-                ? parseInt(localStorage.getItem("daroodCount")) 
-                : 0;
-
-    // مکمل کل کاؤنٹر (کبھی صفر نہیں ہوگا)
+    // ہمیشہ چلنے والا → کبھی صفر نہ ہو
     let totalCount = localStorage.getItem("totalDaroodCount") 
                      ? parseInt(localStorage.getItem("totalDaroodCount")) 
                      : 0;
+
+    // نیا سیشن والا → ری سیٹ ہو سکتا ہے
+    let sessionCount = localStorage.getItem("sessionDaroodCount") 
+                       ? parseInt(localStorage.getItem("sessionDaroodCount")) 
+                       : 0;
 
     let daroodList = localStorage.getItem("daroodList") 
                      ? JSON.parse(localStorage.getItem("daroodList")) 
                      : [];
 
-    const counterDiv = document.getElementById("counter");
     const totalDiv = document.getElementById("totalCounter");
+    const sessionDiv = document.getElementById("sessionCounter");
     const daroodDiv = document.getElementById("daroodList");
 
-    counterDiv.innerText = "موجودہ بار: " + count;
-    totalDiv.innerText = "مکمل کل بار: " + totalCount;
+    totalDiv.innerText = "کل عدد: " + totalCount;
+    sessionDiv.innerText = "اس سیشن میں: " + sessionCount;
 
     daroodList.forEach((d, i) => {
       const div = document.createElement("div");
@@ -80,40 +78,43 @@
     });
 
     function addDarood() {
-      count++;
       totalCount++;
+      sessionCount++;
 
-      const text = "اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ\nاللَّهُمَّ بَارِكْ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ";
+      const text = "اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ ... إِنَّكَ حَمِيدٌ مَجِيدٌ";
 
       daroodList.push(text);
 
-      counterDiv.innerText = "موجودہ بار: " + count;
-      totalDiv.innerText = "مکمل کل بار: " + totalCount;
+      totalDiv.innerText = "کل عدد: " + totalCount;
+      sessionDiv.innerText = "اس سیشن میں: " + sessionCount;
 
       const div = document.createElement("div");
       div.className = "daroodItem";
-      div.innerText = count + ". " + text;
+      div.innerText = sessionCount + ". " + text;
       daroodDiv.appendChild(div);
 
-      // ہر 10 پر save
-      if (count % 10 === 0) {
-        localStorage.setItem("daroodCount", count);
+      // ہمیشہ محفوظ
+      localStorage.setItem("totalDaroodCount", totalCount);
+
+      // سیشن محفوظ
+      localStorage.setItem("sessionDaroodCount", sessionCount);
+
+      // لسٹ محفوظ
+      if (sessionCount % 10 === 0) {
         localStorage.setItem("daroodList", JSON.stringify(daroodList));
       }
-
-      // مکمل کل ہمیشہ save
-      localStorage.setItem("totalDaroodCount", totalCount);
     }
 
     document.getElementById("addBtn").addEventListener("click", addDarood);
 
+    // Reset → صرف سیشن والا جائے گا
     document.getElementById("resetBtn").addEventListener("click", function() {
-      if (confirm("کیا آپ واقعی موجودہ کاؤنٹر ری سیٹ کرنا چاہتے ہیں؟")) {
-        count = 0;
+      if (confirm("کیا آپ واقعی سیشن ری سیٹ کرنا چاہتے ہیں؟")) {
+        sessionCount = 0;
         daroodList = [];
-        localStorage.setItem("daroodCount", 0);
+        localStorage.setItem("sessionDaroodCount", 0);
         localStorage.setItem("daroodList", JSON.stringify([]));
-        counterDiv.innerText = "موجودہ بار: 0";
+        sessionDiv.innerText = "اس سیشن میں: 0";
         daroodDiv.innerHTML = "";
       }
     });
